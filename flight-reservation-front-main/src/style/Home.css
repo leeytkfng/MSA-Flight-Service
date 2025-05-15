@@ -1,0 +1,52 @@
+.home {
+    min-height: 200vh;
+}
+
+.banner {
+    width: 100%;
+    height: 40vh;
+    display: flex;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.banner img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.contents-box {
+    margin: -15vh auto 30px auto;
+    position: relative;
+    z-index: 2;
+    width: 80vw;
+    flex-direction: column;
+}
+
+.contents-box>* {
+    margin-bottom: 10vh;
+}
+
+.flight-type-tabs {
+    display: flex;
+    justify-content: center;
+    margin: 1.5rem 0;
+    gap: 1rem;
+}
+
+.flight-type-tabs button {
+    padding: 0.6rem 1.2rem;
+    border-radius: 999px;
+    border: none;
+    font-weight: bold;
+    background-color: #e5e7eb;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.flight-type-tabs button.active {
+    background-color: #2563eb;
+    color: white;
+}

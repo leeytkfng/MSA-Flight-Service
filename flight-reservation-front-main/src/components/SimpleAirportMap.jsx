@@ -1,0 +1,158 @@
+import { useEffect, useRef, useState } from "react";
+import axios from "axios";
+import "../style/CustomeMarker.css"; // 마커 스타일 등 포함
+
+const airportCoords = {
+    "김포국제공항": { lat: 37.5585, lng: 126.7902 },
+    "인천국제공항": { lat: 37.1002, lng: 126.4407 },
+    "김해국제공항": { lat: 35.1796, lng: 128.9381 },
+    "제주국제공항": { lat: 33.5104, lng: 126.4910 },
+    "청주국제공항": { lat: 36.7179, lng: 127.4990 },
+    "무안국제공항": { lat: 34.9914, lng: 126.3828 },
+    "양양국제공항": { lat: 37.8813, lng: 128.6690 },
+    "대구국제공항": { lat: 35.8941, lng: 128.6585 },
+};
+
+function SimpleAirportMap() {
+    const [departure, setDeparture] = useState(null);
+    const [arrival, setArrival] = useState(null);
+    const [flights, setFlights] = useState([]);
+
+    const mapRef = useRef(null);
+
+    const fetchFlightList = async (from, to) => {
+        try {
+            const res = await axios.get(
+                `http://localhost:8080/api/flights/search?tripType=oneway&departure=${from}&arrival=${to}`
+            );
+            setFlights(res.data.content);
+            console.log(res.data);
+        } catch (err) {
+            console.error("항공편 불러오기 실패:", err);
+        }
+    };
+
+    useEffect(() => {
+        const script = document.createElement("script");
+        script.src =
+            "https://dapi.kakao.com/v2/maps/sdk.js?appkey=2e75cd437fa459df56e78c07d4af052b&autoload=false";
+        script.async = true;
+
+        script.onload = () => {
+            window.kakao.maps.load(() => {
+                const container = document.getElementById("airport-map");
+                const map = new window.kakao.maps.Map(container, {
+                    center: new window.kakao.maps.LatLng(35.8, 127.5),
+                    level: 13,
+                });
+                mapRef.current = map;
+
+                Object.entries(airportCoords).forEach(([name, { lat, lng }]) => {
+                    const position = new window.kakao.maps.LatLng(lat, lng);
+
+                    // 말풍선 마커 스타일 (커스텀 오버레이)
+                    const markerContent = document.createElement("div");
+                    markerContent.className = `custom-marker ${
+                        name === departure || name === arrival ? "selected" : ""
+                    }`;
+                    markerContent.innerText = name;
+                    markerContent.onclick = () => {
+                        if (!departure) {
+                            setDeparture(name);
+                        } else if (!arrival && name !== departure) {
+                            setArrival(name);
+                            fetchFlightList(departure, name);
+                        } else if (name === departure) {
+                            setDeparture(null);
+                            setArrival(null);
+                            setFlights([]);
+                        } else if (name === arrival) {
+                            setArrival(null);
+                            setFlights([]);
+                        }
+                    };
+
+                    new window.kakao.maps.CustomOverlay({
+                        map,
+                        position,
+                        content: markerContent,
+                        yAnchor: 1,
+                    });
+                });
+            });
+        };
+
+        document.head.appendChild(script);
+    }, [departure, arrival]);
+
+    return (
+        <div style={{ display: "flex", gap: "2rem" }}>
+            {/* 지도 영역 */}
+            <div
+                id="airport-map"
+                style={{
+                    width: "65%",
+                    height: "550px",
+                    borderRadius: "12px",
+                    margin: "2rem 0",
+                    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+                }}
+            />
+
+            {/* 오른쪽 영역 (전체 높이 고정) */}
+            <div
+                style={{
+                    flex: 1,
+                    marginTop: "2rem",
+                    height: "550px",              // 전체 고정 높이
+                    display: "flex",
+                    flexDirection: "column",
+                }}
+            >
+                {/* 고정된 상단 */}
+                <div style={{ marginBottom: "1rem" }}>
+                    <h3 style={{ color: "#007bff", marginBottom: "0.5rem" }}>선택된 항공편</h3>
+                    <div>
+                        <strong>출발지:</strong> {departure || "미정"} | <strong>도착지:</strong> {arrival || "미정"}
+                    </div>
+                </div>
+
+                {/* 스크롤 되는 리스트 */}
+                <div
+                    style={{
+                        overflowY: "auto",
+                        flex: 1,
+                        paddingRight: "8px",
+                        borderTop: "1px solid #ddd",
+                        paddingTop: "1rem",
+                    }}
+                >
+                    {flights.length > 0 ? (
+                        flights.map((flight, idx) => (
+                            <div
+                                key={idx}
+                                style={{
+                                    padding: "1rem",
+                                    marginBottom: "1rem",
+                                    background: "#f5f9ff",
+                                    border: "1px solid #ccc",
+                                    borderRadius: "10px"
+                                }}
+                            >
+                                ✈ {flight.departureName} → {flight.arrivalName}
+                                <br />
+                                🗓 {flight.departureTime?.split("T")[0]}
+                            </div>
+                        ))
+                    ) : (
+                        <p>출발지와 도착지를 지도에서 선택해주세요.</p>
+                    )}
+                </div>
+            </div>
+        </div>
+
+
+    );
+}
+
+export default SimpleAirportMap;
