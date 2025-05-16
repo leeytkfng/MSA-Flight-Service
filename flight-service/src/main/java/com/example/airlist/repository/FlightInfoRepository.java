@@ -9,4 +9,6 @@ public interface FlightInfoRepository extends JpaRepository<Flight_info, Long> {
 
     int deleteByDepartureTimeBefore(LocalDateTime now);
 
+    
+
 }

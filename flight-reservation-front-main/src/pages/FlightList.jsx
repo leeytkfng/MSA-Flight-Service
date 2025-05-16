@@ -79,15 +79,9 @@ function FlightList({ filters, allFlights = [], onSelectedFlights }) {
             const selected = selectedRoundTrip[type];
             const isSame = selected?.id === flight.id;
 
-            // 선택 취소 또는 변경
-            const updated = {
-                ...selectedRoundTrip,
-                [type]: isSame ? null : flight
-            };
-
-            // 돌아오는 항공편 날짜 검증
-            if (type === "back" && updated.go && !isSame) {
-                const goDate = new Date(updated.go.departureTime);
+            // 날짜 유효성 체크 (선택하려는 게 back이고, go가 있고, 새로 선택하려는 경우만)
+            if (type === "back" && selectedRoundTrip.go && !isSame) {
+                const goDate = new Date(selectedRoundTrip.go.departureTime);
                 const backDate = new Date(flight.departureTime);
                 if (backDate <= goDate) {
                     alert("돌아오는 항공편은 출발 이후 날짜여야 합니다.");
@@ -95,17 +89,21 @@ function FlightList({ filters, allFlights = [], onSelectedFlights }) {
                 }
             }
 
-            setSelectedRoundTrip(updated);
+            const newState = {
+                ...selectedRoundTrip,
+                [type]: isSame ? null : flight
+            };
 
-            // 선택된 항공편을 부모로 전달 (필터링해서 null 제거)
-            onSelectedFlights([updated.go, updated.back].filter(Boolean));
+            setSelectedRoundTrip(newState);
+
+            const selectedList = [newState.go, newState.back].filter(Boolean);
+            onSelectedFlights(selectedList);
         } else {
             onSelectedFlights((prev) =>
                 prev.length && prev[0].id === flight.id ? [] : [flight]
             );
         }
     };
-
 
     const isSelected = (flight) => {
         return filters?.tripType === "round"
@@ -120,41 +118,45 @@ function FlightList({ filters, allFlights = [], onSelectedFlights }) {
         return false;
     };
 
-    const renderFlightCard = (flight, idx, type) => (
-        <div
-            key={`${type}-${flight.id}-${idx}`}
-            className={`flight-card ${isSelected(flight) ? 'selected' : ''} ${isDisabledBackFlight(flight) ? 'disabled' : ''}`}
-            onClick={() => {
-                if (!isDisabledBackFlight(flight)) handleSelectedFlight(flight, type);
-            }}
-        >
-            <div className="section section-left">
-                <h3>{flight.aircraftType}</h3>
-                <p>{flight.departureTime?.split("T")[0]}</p>
-            </div>
+    const renderFlightCard = (flight, idx, type) => {
+        const isDisabled = type === "back" && isDisabledBackFlight(flight);
 
-            <div className="section section-center">
-                <div className="center-twin">
-                    <div className="time-info">
-                        <p className="time">{formatTime(flight.departureTime)}</p>
-                        <p className="location">{flight.departureName}</p>
-                    </div>
-                    <div className="duration-info">
-                        ✈️ {getFlightDuration(flight.departureTime, flight.arrivalTime)}
-                    </div>
-                    <div className="time-info">
-                        <p className="time">{formatTime(flight.arrivalTime)}</p>
-                        <p className="location">{flight.arrivalName}</p>
+        return (
+            <div
+                key={`${type}-${flight.id}-${idx}`}
+                className={`flight-card ${isSelected(flight) ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}`}
+                onClick={() => {
+                    if (!isDisabled) handleSelectedFlight(flight, type);
+                }}
+            >
+                <div className="section section-left">
+                    <h3>{flight.aircraftType}</h3>
+                    <p>{flight.departureTime?.split("T")[0]}</p>
+                </div>
+
+                <div className="section section-center">
+                    <div className="center-twin">
+                        <div className="time-info">
+                            <p className="time">{formatTime(flight.departureTime)}</p>
+                            <p className="location">{flight.departureName}</p>
+                        </div>
+                        <div className="duration-info">
+                            ✈️ {getFlightDuration(flight.departureTime, flight.arrivalTime)}
+                        </div>
+                        <div className="time-info">
+                            <p className="time">{formatTime(flight.arrivalTime)}</p>
+                            <p className="location">{flight.arrivalName}</p>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div className="section section-right">
-                <p className="price">₩ {flight.price}</p>
-                <p className="seats">좌석 {flight.seatCount}석</p>
+                <div className="section section-right">
+                    <p className="price">₩ {flight.price}</p>
+                    <p className="seats">좌석 {flight.seatCount}석</p>
+                </div>
             </div>
-        </div>
-    );
+        );
+    };
 
     const renderOneWay = () => (
         oneWayFlights.map((flight, idx) =>

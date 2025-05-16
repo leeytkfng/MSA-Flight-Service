@@ -37,6 +37,9 @@ import ProtectedRoute from "./ProtectedRoute.jsx";
 import PublicRoute from "./store/PublicRoute.jsx";
 import EditProfile from "./pages/EditProfile.jsx";
 import GroupPayment from "./pages/GroupPayment.jsx";
+import MapPage from "./pages/MapPage.jsx";
+import SearchFlight from "./components/SearchFlight.jsx";
+import FlightDetail1 from "./pages/searchDetail.jsx";
 
 
 function App() {
@@ -121,11 +124,14 @@ function App() {
           <Route path="/rplace" element={<RplacePage />} />
           <Route path="/splace" element={<SplacePage />} />
           <Route path="/loading" element={<Home1/>}/>
+          <Route path= "/map" element={<MapPage/>} />
           <Route path="/select/:key" element={<SelectSeat/>}/>
           <Route path="/form/:key" element={<SeatInfoFormPage />} />
           <Route path="/confirm/:key" element={<SeatConfirmationPage />} />
           <Route path="complete" element={<ReservationComplete/>} />
-          <Route
+            <Route path="/flight/:id" element={<FlightDetail1 />} />
+
+            <Route
               path="/admin"
               element={
                 <ProtectedRoute isAuthenticated={isAuthenticated} isAdmin={isAdmin}>
@@ -136,7 +142,7 @@ function App() {
         </Routes>
       </div>
 
-      {!hideLayout && <Footer />}
+      {!hideLayout && location.pathname !== "/map" && <Footer />}
     </div>
   );
 }

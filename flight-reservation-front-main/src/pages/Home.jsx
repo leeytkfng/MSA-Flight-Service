@@ -9,9 +9,14 @@ import {useState} from "react";
 import GoogleMap from "../components/GoogleMap.jsx";
 import WeatherForecast from "../components/WeatherForecast.jsx";
 import Boards from "../components/Boards.jsx";
+import {useNavigate} from "react-router-dom";
+import GoogleMapPreview from "./GoogleMapPreview.jsx";
 
 function Home() {
     const [flightType,setFlightType] = useState("domestic"); //국내선 기본
+    const navigate = useNavigate();
+
+
 
     return (
         <div className="home">
@@ -24,27 +29,8 @@ function Home() {
 
             <div className="contents-box">
                 <SearchFlight />
-                <div className="flight-type-tabs">
-                    <button
-                        className={flightType === "domestic" ? "active" : ""}
-                        onClick={() => setFlightType("domestic")}
-                    >
-                        국내선
-                    </button>
-                    <button
-                        className={flightType === "international" ? "active" : ""}
-                        onClick={() => setFlightType("international")}
-                    >
-                        국제선
-                    </button>
-                </div>
-
                 {/* 지도 전환 */}
-                {flightType === "domestic" ? (
-                    <SimpleAirportMap />
-                ) : (
-                    <GoogleMap />
-                )}
+                <GoogleMapPreview />
                 <QuickLink />
                 <AdBanner />
                 <Hotplace />

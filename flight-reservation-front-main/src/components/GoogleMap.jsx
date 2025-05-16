@@ -1,25 +1,41 @@
+// GoogleMapInternational.jsx
 import { GoogleMap, useLoadScript, OverlayView } from "@react-google-maps/api";
-import {useRef, useState} from "react";
-import {allAirports} from "../data/allAirports.js";
+import { useRef, useState } from "react";
+import { allAirports } from "../data/allAirports.js";
+import "../pages/FlightOverlay.css";
+import { filterAirportsByDistance } from "../data/fucntionDistance.js";
 
 const containerStyle = {
     width: "100%",
-    height: "550px",
+    height: "100%",
 };
 
+const softDarkStyle = [
+    { elementType: "geometry", stylers: [{ color: "#1d2c4d" }] },
+    { elementType: "labels.text.fill", stylers: [{ color: "#8ec3b9" }] },
+    { elementType: "labels.text.stroke", stylers: [{ color: "#1a3646" }] },
+    { featureType: "administrative.country", elementType: "geometry.stroke", stylers: [{ color: "#4b6878" }] },
+    { featureType: "landscape", elementType: "geometry", stylers: [{ color: "#223a5e" }] },
+    { featureType: "poi", elementType: "labels.text.fill", stylers: [{ color: "#6f9ba5" }] },
+    { featureType: "poi.park", elementType: "geometry", stylers: [{ color: "#1e3d59" }] },
+    { featureType: "poi.park", elementType: "labels.text.fill", stylers: [{ color: "#76cfa6" }] },
+    { featureType: "road", elementType: "geometry", stylers: [{ color: "#2c4a74" }] },
+    { featureType: "road", elementType: "labels.text.fill", stylers: [{ color: "#9ca5b3" }] },
+    { featureType: "road.highway", elementType: "geometry", stylers: [{ color: "#4e6d94" }] },
+    { featureType: "transit", elementType: "labels.icon", stylers: [{ visibility: "off" }] },
+    { featureType: "water", elementType: "geometry", stylers: [{ color: "#0e1626" }] },
+    { featureType: "water", elementType: "labels.text.fill", stylers: [{ color: "#4e6d94" }] },
+];
+
 const center = { lat: 35, lng: 130 };
-
-const continentHubCodes = ["ICN", "SIN", "DXB", "LHR", "JFK", "GRU", "JNB","SYD"];
-
-
+const continentHubCodes = ["ICN", "SIN", "DXB", "LHR", "JFK", "GRU", "JNB", "SYD"];
 
 function GoogleMapInternational() {
     const [departure, setDeparture] = useState(null);
     const [arrival, setArrival] = useState(null);
     const [visibleAirports, setVisibleAirports] = useState([]);
-    const mapRef = useRef(null); // 지도 객체 저장용
-    const [hovered, setHovered] = useState(null);
-
+    const [zoomLevel, setZoomLevel] = useState(2);
+    const mapRef = useRef(null);
 
     const { isLoaded } = useLoadScript({
         googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
@@ -37,42 +53,37 @@ function GoogleMapInternational() {
     const updateVisibleAirports = (map) => {
         const bounds = map.getBounds();
         const zoom = map.getZoom();
+        setZoomLevel(zoom);
         if (!bounds) return;
 
-        const filtered = allAirports.filter((airport) => {
+        const inBounds = allAirports.filter((airport) => {
             const pos = new window.google.maps.LatLng(airport.lat, airport.lng);
-            return (
-                airport.type !== "domestic" &&
-                bounds.contains(pos) &&
-                (
-                    zoom >= 10 ||                              // 가까이 확대: 다 보여줌
-                    (zoom >= 4.5 && airport.price <= 1000000) ||  // 중간 줌: 인기 공항들
-                    (zoom >= 3.5 && airport.code === "HND") ||
-                    (zoom >= 2 && continentHubCodes.includes(airport.code))         // 가장 멀리: 인천만
-                )
-            );
+            return bounds.contains(pos);
         });
 
-
+        const minDistance = zoom >= 6 ? 50 : zoom >= 4 ? 100 : 200;
+        const filtered = filterAirportsByDistance(inBounds, minDistance, continentHubCodes);
         setVisibleAirports(filtered);
     };
-
 
     if (!isLoaded) return <div>지도 로딩 중...</div>;
 
     return (
-        <div style={{ display: "flex", gap: "2rem" ,  borderRadius: "12px", }}>
-            <GoogleMap mapContainerStyle={containerStyle} center={center} zoom={2.7}
-             onLoad={(map) => {
-                 mapRef.current = map;
-                 updateVisibleAirports(map);
-             }}
-
-             onIdle={() => updateVisibleAirports(mapRef.current)}
-                       options={{
-                           minZoom: 2,
-                           maxZoom: 10
-                       }}
+        <div style={{ display: "flex", width: "100%", height: "100%" }}>
+            <GoogleMap
+                mapContainerStyle={containerStyle}
+                center={center}
+                zoom={2.7}
+                onLoad={(map) => {
+                    mapRef.current = map;
+                    updateVisibleAirports(map);
+                }}
+                onIdle={() => updateVisibleAirports(mapRef.current)}
+                options={{
+                    minZoom: 2,
+                    maxZoom: 10,
+                    styles: softDarkStyle,
+                }}
             >
                 {visibleAirports.map((airport) => (
                     <OverlayView
@@ -80,45 +91,25 @@ function GoogleMapInternational() {
                         position={{ lat: airport.lat, lng: airport.lng }}
                         mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
                     >
-                        <div
-                            onClick={() => handleClick(airport)}
-                            onMouseEnter={() => setHovered(airport.code)} //ZIndex 이용해서 마우스호버
-                            onMouseLeave={() => setHovered(null)}
-                            style={{
-                                width: "115px",         // ✅ 고정 너비 설정
-                                background: "white",
-                                color: "#007bff",
-                                zIndex: hovered === airport.code ? 999 : 1,
-                                position: "relative",
-                                padding: "12px 15px",
-                                borderRadius: "8px",
-                                fontSize: "15px",
-                                lineHeight: "1.4",
-                                textAline:"center",
-                                cursor: "pointer",
-                                whiteSpace: "nowrap",
-                                transform: "translate(-50%, -100%)",
-                                boxShadow: airport.name === departure || airport.name === arrival
-                                    ? "0 0 10px rgba(0,123,255,0.8)"
-                                    : "0 4px 12px rgba(0, 0, 0, 0.1)",
-                            }}
-                        >
-                            <div style={{ fontWeight: "600" }}>{airport.name}</div>
-                            <div style={{ color: "#f84949", fontWeight: "bold" }}>
-                                ₩{airport.price.toLocaleString()}~
+                        {continentHubCodes.includes(airport.code) || zoomLevel >= 6 ? (
+                            <div
+                                className={`flight-overlay ${airport.name === departure || airport.name === arrival ? 'active' : ''}`}
+                                onClick={() => handleClick(airport)}
+                                title={airport.name}
+                            >
+                                <div className="airport-name">{airport.name}</div>
+                                <div className="airport-price">₩{airport.price.toLocaleString()}~</div>
                             </div>
-                        </div>
+                        ) : (
+                            <div
+                                className="airport-dot"
+                                onClick={() => handleClick(airport)}
+                                title={airport.name}
+                            />
+                        )}
                     </OverlayView>
                 ))}
             </GoogleMap>
-
-            <div style={{ width: "35%" }}>
-                <h3 style={{ color: "#007bff" }}>선택된 항공편</h3>
-                <p>
-                    <strong>출발지:</strong> {departure || "미정"} <br />
-                    <strong>도착지:</strong> {arrival || "미정"}
-                </p>
-            </div>
         </div>
     );
 }
