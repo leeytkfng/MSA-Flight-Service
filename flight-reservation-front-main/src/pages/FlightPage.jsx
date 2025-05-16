@@ -56,45 +56,19 @@ function FlightPage() {
             return;
         }
 
-        try {
-            for (const flight of selectedFlights) {
-                await apiClient.post("/api/kafka/publish" ,flight)
-            }
-            navi("/loading");
-        } catch (error) {
-            console.error("Kafka 전송실패:", error);
-            alert("전송실패");
+        if (selectedFlights.length === 2) {
+            const departureId = selectedFlights[0].id;
+            const arrivalId = selectedFlights[1].id;
+            navi(`/flight/detail?departureId=${departureId}&arrivalId=${arrivalId}`);
+        } else {
+            const departureId = selectedFlights[0].id;
+            navi(`/flight/detail?departureId=${departureId}`);
         }
     }
 
-    const goToDetail = () => {
-        if (!isLoggedIn()) {
-            alert("로그인이 필요합니다.");
-            navi("/login");
-            return;
-        }
-
-        if (selectedFlights.length === 0) {
-            alert("선택된 항공편이 없습니다.");
-            return;
-        }
-
-        // 편도일 경우
-        if (selectedFlights.length === 1) {
-            navi(`/flight/${selectedFlights[0].id}`);
-        }
-
-        // 왕복일 경우는 선택사항: 쿼리스트링이나 상태(state)로 backFlight 넘길 수 있음
-        else if (selectedFlights.length === 2) {
-            navi(`/flight/${selectedFlights[0].id}`, {
-                state: { backFlight: selectedFlights[1] }, // 선택 사항
-            });
-        }
-    };
-
 
     return (
-        <div style={{ marginTop: "20px"}}>
+        <div>
             <SearchFlight onSearch={handleSearch} />
 
             <div className="selected-flights-box">
@@ -136,7 +110,7 @@ function FlightPage() {
                     </div>
 
 
-                    <button className="send-button mt-3" onClick={goToDetail}>
+                    <button className="send-button mt-3" onClick={sendTokafka}>
                         예약하기
                     </button>
                 </div>

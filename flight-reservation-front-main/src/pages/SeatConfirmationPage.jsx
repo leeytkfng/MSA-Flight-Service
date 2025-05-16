@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import axios from 'axios';
 import styles from '../style/SeatConfirmationPage.module.css';
 import apiClient from "../apiClient.jsx";
@@ -10,6 +10,8 @@ function SeatConfirmationPage() {
     const [reservation, setReservation] = useState(null);
     const [seats, setSeats] = useState([]);
     const navigate = useNavigate();
+    const location = useLocation();
+    const from = location.state?.from || "/";
 
     useEffect(() => {
         apiClient.get('/api/reservations/search', { params: { key } })
@@ -19,27 +21,27 @@ function SeatConfirmationPage() {
             })
             .catch(err => console.error(err));
 
-        
+
     }, [key]);
 
     const formatDate = (localDateTimeStr) => {
         const date = new Date(localDateTimeStr);
         const formattedDate = date.toLocaleDateString('ko-KR', {
-          year: 'numeric', month: 'numeric', day: 'numeric', weekday: 'short'
+            year: 'numeric', month: 'numeric', day: 'numeric', weekday: 'short'
         });
         const formattedTime = date.toLocaleTimeString('ko-KR', {
-          hour: '2-digit', minute: '2-digit'
+            hour: '2-digit', minute: '2-digit'
         });
         return `${formattedDate} ${formattedTime}`;
-      };
+    };
 
-      const handleNext = async () => {
+    const handleNext = async () => {
         try {
             await apiClient.post('/api/reservations/confirm', seats, { params: { key } });
-    
-            // ✅ 팝업 없이 페이지 이동
-            navigate(`/complete`);
-    
+
+            // 팝업 없이 페이지 이동
+            navigate(`/complete`, { state: { from } });
+
         } catch (err) {
             console.error("좌석 정보 저장 실패:", err);
             alert("좌석 정보 저장 중 오류가 발생했습니다.");
@@ -72,7 +74,7 @@ function SeatConfirmationPage() {
                         <div>좌석가격: {seat.sPrice}</div>
                     </div>
                 ))}
-                 <button onClick={handleNext} className={styles.nextButton}>다음</button>
+                <button onClick={handleNext} className={styles.nextButton}>다음</button>
             </div>
         </div>
     );

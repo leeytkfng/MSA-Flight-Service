@@ -130,6 +130,7 @@ function App() {
           <Route path="/confirm/:key" element={<SeatConfirmationPage />} />
           <Route path="complete" element={<ReservationComplete/>} />
             <Route path="/flight/:id" element={<FlightDetail1 />} />
+            <Route path="/flight/detail" element={<FlightDetail />} />
 
             <Route
               path="/admin"

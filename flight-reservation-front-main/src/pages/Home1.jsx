@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from "react-redux";
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import apiClient from "../apiClient.jsx";
 import { jwtDecode } from "jwt-decode";
 
@@ -9,6 +9,7 @@ function ReservationPage() {
     const [error, setError] = useState(null);
     const navigate = useNavigate();
     const { accessToken } = useSelector((state) => state.auth);
+    const location = useLocation();
 
     useEffect(() => {
         const handlePostRequest = async () => {
@@ -41,7 +42,8 @@ function ReservationPage() {
 
                 const receivedKey = response.data;
                 console.log("Received Key:", receivedKey);
-                navigate(`/select/${receivedKey}`);
+                const from = location.state?.from || "/";
+                navigate(`/select/${receivedKey}`, { state: { from } });
             } catch (err) {
                 console.error("Error occurred during POST request:", err);
                 setError("POST 요청 중 오류가 발생했습니다.");

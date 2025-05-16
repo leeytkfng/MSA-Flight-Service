@@ -1,6 +1,7 @@
 package com.example.airlist.controller;
 
 import com.example.airlist.dto.FlightDto;
+import com.example.airlist.dto.FlightReservationDto;
 import com.example.airlist.service.FlightKafkaProducer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,7 @@ public class KafkaTestController {
     private final FlightKafkaProducer flightKafkaProducer;
 
     @PostMapping("/publish")
-    public ResponseEntity<String> publishFlight(@RequestBody FlightDto flightDto){
+    public ResponseEntity<String> publishFlight(@RequestBody FlightReservationDto flightDto){
         flightKafkaProducer.sendFlightData(flightDto);
         return ResponseEntity.ok("전송완료");
     }
