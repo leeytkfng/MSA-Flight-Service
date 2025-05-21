@@ -16,7 +16,7 @@ public class SecurityConfig {
                 .cors().and()
                 .csrf().disable()
                 .authorizeHttpRequests()
-                .requestMatchers("/api/flights/**","/test/**","/api/index/**","/api/kafka/**", "/api/boards/**", "/api/admin/flights/**", "/api/autocomplete/**").permitAll() // ✅ 이거 중요
+                .requestMatchers("/api/flights/**","/test/**","/api/index/**","/api/kafka/**", "/api/boards/**", "/api/admin/flights/**", "/api/autocomplete/**" ,"/api/gemini/**").permitAll() // ✅ 이거 중요
                 .anyRequest().authenticated();
 
         return http.build();

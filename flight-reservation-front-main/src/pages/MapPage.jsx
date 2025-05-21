@@ -1,28 +1,37 @@
-import GoogleMapInternational from "../components/GoogleMap.jsx";
-import Sidebar from "../components/Sidebar.jsx";
+import GoogleMapInternational from "../components/map/GoogleMap.jsx";
+import Sidebar from "../components/map/Sidebar.jsx";
+import {useState} from "react";
 
 const MapPage = () => {
+    const [flights, setFlights] = useState([]);
+    const [departure, setDeparture] = useState({ name: "인천", code: "ICN", lat: 37.46, lng: 126.44 });
+    const [arrival, setArrival] = useState(null);
+
     return (
-      <div style={{overflow: "hidden"}}>
-        <div style={{
-            display: "flex",
-            height: "calc(100vh - 64px)",  // 헤더 높이만큼 제외
-            marginTop: "82px",             // fixed header 고려
-            overflow: "hidden"             // 전체 스크롤 차단
-        }}>
-            <div style={{ flex: 3 }}>
-                <GoogleMapInternational />
-            </div>
+        <div style={{ overflow: "hidden" }}>
             <div style={{
-                flex: 1,
-                overflowY: "auto",         // ✅ 사이드바만 세로 스크롤
-                maxHeight: "100%"          // 부모 높이 안 넘게
+                display: "flex",
+                height: "100vh",
+                overflow: "hidden"
             }}>
-                <Sidebar departure="인천" arrival="미정" />
+                <div style={{ flex: 3 }}>
+                    <GoogleMapInternational  departure={departure}
+                                             arrival={arrival}
+                                             setDeparture={setDeparture}
+                                             setArrival={setArrival} />
+                </div>
+                <div style={{ flex: 1, overflowY: "auto", maxHeight: "100%" }}>
+                    <Sidebar departure={departure}
+                             arrival={arrival}
+                             setDeparture={setDeparture}
+                             setArrival={setArrival}
+                             flights={flights}
+                             setFlights={setFlights}/>
+                </div>
             </div>
         </div>
-      </div>
     );
 };
+
 
 export default MapPage;

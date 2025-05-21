@@ -1,9 +1,8 @@
-// AdminPage.js
-import React, { useState, useEffect } from "react";
-import apiClient from "../apiClient";
-import UserManagement from "../components/UserManagement";
-import FlightManagement from "../components/FlightManagement";
-import ReservationManagement from "../components/ReservationManagement.jsx";
+import {useEffect, useState} from "react";
+import UserManagement from "../components/adminPage/UserManagement.jsx";
+import FlightManagement from "../components/adminPage/FlightManagement.jsx";
+import ReservationManagement from "../components/adminPage/ReservationManagement.jsx";
+import apiClient from "../apiClient.jsx";
 
 const AdminPage = () => {
     const [selectedService, setSelectedService] = useState("users");

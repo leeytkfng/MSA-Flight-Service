@@ -1,22 +1,15 @@
-import SearchFlight from "../components/SearchFlight";
-import AdBanner from '../components/AdBanner';
-
-import '../style/Home.css';
-import QuickLink from "../components/QuickLink";
-import Hotplace from "../components/Hotplace";
-import SimpleAirportMap from "../components/SimpleAirportMap.jsx";
-import {useState} from "react";
-import GoogleMap from "../components/GoogleMap.jsx";
-import WeatherForecast from "../components/WeatherForecast.jsx";
-import Boards from "../components/Boards.jsx";
-import {useNavigate} from "react-router-dom";
-import GoogleMapPreview from "./GoogleMapPreview.jsx";
+import PlaceLink from "../components/home/PlaceLink.jsx";
+import QuickLink from "../components/home/QuickLink.jsx";
+import AdBanner from "../components/home/AdBanner.jsx";
+import SearchFlight from "../components/flight/SearchFlight.jsx";
+import GoogleMapPreview from "../components/map/GoogleMapPreview.jsx";
+import "../styles/Home.css"
 
 function Home() {
-    const [flightType,setFlightType] = useState("domestic"); //국내선 기본
-    const navigate = useNavigate();
 
-
+    const scrollToTop = () => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    };
 
     return (
         <div className="home">
@@ -24,18 +17,20 @@ function Home() {
                 <img
                     src="/images/img1.jpg"
                     alt="Banner Image"
+                    className="banner-img"
                 />
+                <img src="/images/mainplane.png" alt="Flying" className="flying-plane" />
             </div>
 
             <div className="contents-box">
                 <SearchFlight />
-                {/* 지도 전환 */}
                 <GoogleMapPreview />
                 <QuickLink />
                 <AdBanner />
-                <Hotplace />
-                <WeatherForecast />
-                <Boards />
+                <PlaceLink />
+            </div>
+            <div className="scroll-to-top" onClick={scrollToTop}>
+                <p>↑ 페이지 상단으로 이동</p>
             </div>
         </div>
     )

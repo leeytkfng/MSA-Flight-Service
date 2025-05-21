@@ -1,19 +1,17 @@
-import { useEffect, useState } from "react";
-import SearchFlight from "../components/SearchFlight.jsx";
-import FlightList from "./FlightList.jsx";
-import axios from "axios";
-import MapWithPath from "../components/MapWithPath.jsx";
-import "./FlightPage.css"
-import GoogleMap from "../components/GoogleMap.jsx";
-import apiClient from "../apiClient.jsx";
-import {useNavigate} from "react-router-dom";
+import {useEffect, useState} from "react";
+import {useLocation, useNavigate} from "react-router-dom";
+import SearchFlight from "../components/flight/SearchFlight.jsx";
+import FlightList from "../components/flight/FlightList.jsx";
+
+import "../styles/FlightPage.css"
 
 function FlightPage() {
+    const location = useLocation(); // ✅ 전달받은 state 읽기
+    const searchData = location.state; // ✅ navigate로 전달된 데이터
+    const navi = useNavigate();
 
     const [filters, setFilters] = useState(null);
-    const [allFlights, setAllFlights] = useState([]);
     const [selectedFlights, setSelectedFlights] = useState([]);
-    const navi = new useNavigate();
 
     const isLoggedIn = () => {
         const token = localStorage.getItem("accessToken");
@@ -21,28 +19,15 @@ function FlightPage() {
     }
 
     useEffect(() => {
-        const fetchInitial = async () => {
-            try {
-                const res = await apiClient.get("/api/flights",{
-                    params: {
-                        page: 0,
-                        size: 10,
-                    },
-                });
-                setAllFlights(res.data);
-                console.log(res);
-            } catch (error) {
-                console.error("초기 항공편 데이터 불러오기 실패", error);
-            }
-        };
-
-        if (!filters) {
-            fetchInitial();
+        if (searchData) {
+            setFilters(searchData); // ✅ 검색 조건 반영
+        } else {
+            setFilters(null); // 새로고침 시 초기화
         }
-    }, [filters]);
+    }, [searchData]);
 
     const handleSearch = (searchData) => {
-        setFilters(searchData); // 상태 전달
+        setFilters(searchData);
     };
 
     const sendTokafka = async () =>{
@@ -68,49 +53,49 @@ function FlightPage() {
 
 
     return (
-        <div>
+        <div className="flight-page-container">
             <SearchFlight onSearch={handleSearch} />
 
-            <div className="selected-flights-box">
-                <MapWithPath flights={selectedFlights} />
+            <div className="flight-page-selection-wrapper">
+                <div className="flight-page-selected-box">
+                    <h3 className="flight-page-title">선택된 항공편</h3>
 
-                <div className="flight-info-box">
-                    <h3 className="mb-5">선택된 항공편</h3>
-
-                    <div className="flight-pair-container1">
+                    <div className="flight-page-selected-list">
                         {selectedFlights.length === 2 ? (
                             <>
-                                {/* 출발 항공편 */}
-                                <div className="flight-card1">
-                                    <p className="route1">
+                                <div className="flight-page-flight-card">
+                                    <p className="flight-page-route">
                                         ✈ {selectedFlights[0].departureName} → {selectedFlights[0].arrivalName}
                                     </p>
-                                    <p className="date1">🗓 {selectedFlights[0].departureTime?.split("T")[0]}</p>
+                                    <p className="flight-page-date">
+                                        🗓 {selectedFlights[0].departureTime?.split("T")[0]}
+                                    </p>
                                 </div>
 
-                                {/* 돌아오는 항공편 */}
-                                <div className="flight-card1">
-                                    <p className="route1">
+                                <div className="flight-page-flight-card">
+                                    <p className="flight-page-route">
                                         ✈ {selectedFlights[1].departureName} → {selectedFlights[1].arrivalName}
                                     </p>
-                                    <p className="date1">🗓 {selectedFlights[1].departureTime?.split("T")[0]}</p>
+                                    <p className="flight-page-date">
+                                        🗓 {selectedFlights[1].departureTime?.split("T")[0]}
+                                    </p>
                                 </div>
                             </>
                         ) : (
-                            // 편도일 때는 그대로
                             selectedFlights.map((flight, idx) => (
-                                <div key={idx} className="flight-card1">
-                                    <p className="route1">
+                                <div className="flight-page-flight-card" key={idx}>
+                                    <p className="flight-page-route">
                                         ✈ {flight.departureName} → {flight.arrivalName}
                                     </p>
-                                    <p className="date1">🗓 {flight.departureTime?.split("T")[0]}</p>
+                                    <p className="flight-page-date">
+                                        🗓 {flight.departureTime?.split("T")[0]}
+                                    </p>
                                 </div>
                             ))
                         )}
                     </div>
 
-
-                    <button className="send-button mt-3" onClick={sendTokafka}>
+                    <button className="flight-page-reserve-btn" onClick={sendTokafka}>
                         예약하기
                     </button>
                 </div>
@@ -118,8 +103,8 @@ function FlightPage() {
 
             <FlightList
                 filters={filters}
-                allFlights={allFlights}
                 onSelectedFlights={setSelectedFlights}
+                selectedFlights={selectedFlights}
             />
         </div>
     );
