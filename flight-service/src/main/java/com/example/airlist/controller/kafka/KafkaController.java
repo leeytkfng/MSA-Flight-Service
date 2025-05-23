@@ -1,8 +1,7 @@
-package com.example.airlist.controller;
+package com.example.airlist.controller.kafka;
 
-import com.example.airlist.dto.FlightDto;
 import com.example.airlist.dto.FlightReservationDto;
-import com.example.airlist.service.FlightKafkaProducer;
+import com.example.airlist.service.kafka.FlightKafkaProducer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/kafka")
 @RequiredArgsConstructor
-public class KafkaTestController {
+public class KafkaController {
 
     private final FlightKafkaProducer flightKafkaProducer;
 

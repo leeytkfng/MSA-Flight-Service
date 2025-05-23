@@ -1,20 +1,23 @@
-package com.example.airlist.service;
+package com.example.airlist.service.elastic;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import com.example.airlist.entity.Airport;
 import com.example.airlist.entity.AirportDocument;
 import com.example.airlist.repository.AirPortRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
-public class AirportIndexer {
-
+public class AirportEsIndexer {
     private final AirPortRepository airportRepository;
     private final ElasticsearchClient esClient;
+
+    public AirportEsIndexer(AirPortRepository airportRepository, ElasticsearchClient esClient) {
+        this.airportRepository = airportRepository;
+        this.esClient = esClient;
+    }
+
 
     public void indexAll() {
         List<Airport> airports = airportRepository.findAll();

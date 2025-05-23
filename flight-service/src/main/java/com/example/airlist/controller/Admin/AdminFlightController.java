@@ -1,4 +1,4 @@
-package com.example.airlist.controller;
+package com.example.airlist.controller.Admin;
 
 import com.example.airlist.dto.FlightInfoDto;
 import com.example.airlist.entity.AirCraft;

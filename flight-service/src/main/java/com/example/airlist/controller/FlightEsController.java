@@ -2,7 +2,7 @@ package com.example.airlist.controller;
 
 import com.example.airlist.dto.FlightInfoDto;
 import com.example.airlist.entity.FlightDocument;
-import com.example.airlist.service.FlightSearchElastic;
+import com.example.airlist.service.elastic.FlightEsSearch;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,12 +17,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/flights")
-public class FlightController {
+public class FlightEsController {
 
 
-    private final FlightSearchElastic flightSearchService;
+    private final FlightEsSearch flightSearchService;
 
-    public FlightController(FlightSearchElastic flightSearchService) {
+    public FlightEsController(FlightEsSearch flightSearchService) {
         this.flightSearchService = flightSearchService;
     }
 

@@ -1,4 +1,4 @@
-package com.example.airlist.service;
+package com.example.airlist.service.elastic;
 
 import com.example.airlist.entity.FlightDocument;
 import com.example.airlist.entity.Flight_info;
@@ -11,11 +11,15 @@ import java.util.List;
 import java.util.Random;
 
 @Service
-@RequiredArgsConstructor
-public class FlightElasticIndexer {
+public class FlightEsIndexer {
 
     private final FlightSearchRepositroy flightSearchRepositroy;
     private final FlightInfoRepository flightInfoRepository;
+
+    public FlightEsIndexer(FlightSearchRepositroy flightSearchRepositroy, FlightInfoRepository flightInfoRepository) {
+        this.flightSearchRepositroy = flightSearchRepositroy;
+        this.flightInfoRepository = flightInfoRepository;
+    }
 
     public void indexAll() {
         List<Flight_info> flights = flightInfoRepository.findAll(); //기존 테이블에서 가져옴

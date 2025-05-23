@@ -1,4 +1,4 @@
-package com.example.airlist.service;
+package com.example.airlist.service.elastic;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
@@ -7,7 +7,6 @@ import com.example.airlist.entity.AirportDocument;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -19,12 +18,17 @@ import java.util.Map;
 import java.util.Objects;
 
 @Service
-@RequiredArgsConstructor
-public class AirportSearchService {
+public class AirportEsService {
+
 
     private final ElasticsearchClient esClient;
     private final RedisTemplate<String, Object> redisTemplate;
     private final ObjectMapper objectMapper;
+    public AirportEsService(ElasticsearchClient esClient, RedisTemplate<String, Object> redisTemplate, ObjectMapper objectMapper, SearchLogEsService searchLogEsService) {
+        this.esClient = esClient;
+        this.redisTemplate = redisTemplate;
+        this.objectMapper = objectMapper;
+    }
 
     public List<Map<String, String>> autocomplete(String keyword) throws IOException {
         String key = "airport::autocomplete::" + keyword;
@@ -48,9 +52,27 @@ public class AirportSearchService {
         SearchResponse<AirportDocument> response = esClient.search(s -> s
                         .index("airports")
                         .query(q -> q
-                                .match(m -> m
-                                        .field("nameKo")
-                                        .query(keyword)
+                                .bool(b -> b
+                                        .should(s1 -> s1.match(m -> m
+                                                .field("nameKo")
+                                                .query(keyword)
+                                                .analyzer("korean_autocomplete_analyzer")
+                                                .fuzziness("AUTO") //유사검색
+                                        ))
+                                        .should(s2 -> s2.prefix(p -> p
+                                                .field("nameKo") //prefix
+                                                .value(keyword)
+                                        ))
+                                        .should(s3 -> s3.match(m -> m
+                                                .field("code") //코드 검색
+                                                .query(keyword)
+                                        ))
+                                )
+                        )
+                        .sort(sort -> sort
+                                .field(f -> f
+                                        .field("searchCount")    // ✅ 인기순 정렬
+                                        .order(co.elastic.clients.elasticsearch._types.SortOrder.Desc)
                                 )
                         )
                         .size(10),

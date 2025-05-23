@@ -1,4 +1,4 @@
-package com.example.airlist.service;
+package com.example.airlist.service.elastic;
 
 import com.example.airlist.entity.FlightDocument;
 import com.example.airlist.repository.FlightSearchRepositroy;
@@ -13,12 +13,12 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 
 @Service
-public class FlightSearchElastic {
+public class FlightEsSearch {
 
     private final FlightSearchRepositroy flightSearchRepositroy;
     private final RedisTemplate<String, Object> redisTemplate;
 
-    public FlightSearchElastic(FlightSearchRepositroy flightSearchRepositroy, RedisTemplate<String, Object> redisTemplate) {
+    public FlightEsSearch(FlightSearchRepositroy flightSearchRepositroy, RedisTemplate<String, Object> redisTemplate) {
         this.flightSearchRepositroy = flightSearchRepositroy;
         this.redisTemplate = redisTemplate;
     }
