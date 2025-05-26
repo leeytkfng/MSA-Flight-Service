@@ -1,7 +1,12 @@
-# Flight Reservation System
+# ✈️ Flight Reservation System
 
-## 개요
-**Flight Reservation System**은 MSA(Microservices Architecture)를 채택하여 항공편 검색, 예약, 유저 관리 등 다양한 서비스를 분산된 마이크로서비스로 구현한 애플리케이션입니다. 개별 서비스는 확장성과 유지보수에 용이하도록 구성되었으며, Eureka를 통한 서비스 디스커버리와 Gateway를 통한 API 라우팅을 지원합니다.
+마이크로서비스 기반의 항공편 예약 시스템입니다.  
+Eureka + Spring Gateway + Kafka + Elasticsearch 등 최신 백엔드 기술을 도입하였고,  
+프론트엔드는 React + Vite 기반으로 구축되어 있습니다.
+
+> ✅ 주요 기술: Spring Boot, MSA, Kafka, Redis, Elasticsearch, JWT  
+> ✅ 주요 기능: 항공편 검색 / 예약 / 사용자 인증 / 위치 기반 시각화  
+> ✅ 아키텍처: MSA + Eureka + Gateway + 각 서비스 분리  
 
 ## 아키텍처 개요
 프로젝트는 아래와 같은 주요 컴포넌트로 구성됩니다:
