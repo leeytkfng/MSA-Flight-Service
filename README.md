@@ -6,7 +6,19 @@ Eureka + Spring Gateway + Kafka + Elasticsearch 등 최신 백엔드 기술을 �
 
 > ✅ 주요 기술: Spring Boot, MSA, Kafka, Redis, Elasticsearch, JWT  
 > ✅ 주요 기능: 항공편 검색 / 예약 / 사용자 인증 / 위치 기반 시각화  
-> ✅ 아키텍처: MSA + Eureka + Gateway + 각 서비스 분리  
+> ✅ 아키텍처: MSA + Eureka + Gateway + 각 서비스 분리
+
+## 📚 목차
+
+- [프로젝트 개요](#프로젝트-개요)
+- [아키텍처 구성](#아키텍처-개요)
+- [주요 기능](#주요-기능)
+- [기술 스택](#기술-스택)
+- [API 문서화](#api-문서화-swagger)
+- [설치 및 실행 방법](#설치-및-실행-방법)
+- [Roadmap](#roadmap--future-plans)
+- [기여 방법](#기여-방법)
+
 
 ## 아키텍처 개요
 프로젝트는 아래와 같은 주요 컴포넌트로 구성됩니다:
@@ -43,6 +55,15 @@ Eureka + Spring Gateway + Kafka + Elasticsearch 등 최신 백엔드 기술을 �
 ---
 
 ## 기술 스택
+![Java](https://img.shields.io/badge/Java-17+-orange?logo=openjdk)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-green?logo=springboot)
+![Gradle](https://img.shields.io/badge/Gradle-8.x-02303A?logo=gradle)
+![Kafka](https://img.shields.io/badge/Kafka-Event%20Streaming-black?logo=apachekafka)
+![Redis](https://img.shields.io/badge/Redis-Cache-red?logo=redis)
+![Elasticsearch](https://img.shields.io/badge/Elasticsearch-Search-blue?logo=elasticsearch)
+![JWT](https://img.shields.io/badge/JWT-Auth-blueviolet?logo=jsonwebtokens)
+![React](https://img.shields.io/badge/React-18-blue?logo=react)
+![Vite](https://img.shields.io/badge/Vite-Bundler-646CFF?logo=vite)
 - **백엔드**:
   - **언어/프레임워크**: Java 17 이상, Spring Boot  
   - **빌드 도구**: Gradle  
