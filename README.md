@@ -64,6 +64,8 @@ Eureka + Spring Gateway + Kafka + Elasticsearch 등 최신 백엔드 기술을 �
 ![JWT](https://img.shields.io/badge/JWT-Auth-blueviolet?logo=jsonwebtokens)
 ![React](https://img.shields.io/badge/React-18-blue?logo=react)
 ![Vite](https://img.shields.io/badge/Vite-Bundler-646CFF?logo=vite)
+
+## 기술 상세 설명
 - **백엔드**:
   - **언어/프레임워크**: Java 17 이상, Spring Boot  
   - **빌드 도구**: Gradle  
